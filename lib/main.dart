@@ -1,13 +1,34 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:yellow_class_movie_task/boxes.dart';
-import 'package:yellow_class_movie_task/model/hiveData.dart';
-import 'package:flutter/cupertino.dart';
-import 'addMovieForm.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:hive_generator/hive_generator.dart';
+import 'package:yellow_class_movie_task/Auth/loginUser.dart';
+import 'package:yellow_class_movie_task/Auth/registerUser.dart';
+import 'package:yellow_class_movie_task/onStart.dart';
+import 'package:yellow_class_movie_task/view/AllMovies.dart';
 
-Future main() async {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Movie App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.red),
+      home: AllMovies(),
+      routes: <String, WidgetBuilder>{
+        "Login": (BuildContext context) => LoginUser(),
+        "SignUp": (BuildContext context) => RegisterUser(),
+        "start": (BuildContext context) => onStart(),
+      },
+    );
+  }
+}
+
+/*Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(MoviesDataAdapter());
@@ -37,7 +58,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final CategoriesScroller categoriesScroller = CategoriesScroller();
+  //final CategoriesScroller categoriesScroller = CategoriesScroller();
   ScrollController controller = ScrollController();
   bool closeTopContainer = false;
   double topContainer = 0;
@@ -300,4 +321,4 @@ class CategoriesScroller extends StatelessWidget {
       ),
     );
   }
-}
+}*/
