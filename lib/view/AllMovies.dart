@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import 'dart:io';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:yellow_class_movie_task/Utility.dart';
@@ -28,7 +29,11 @@ class AllMoviesState extends State<AllMovies> {
   int count = 0;
   int viewArrangement = 2;
 
-//checking Authentification
+  double fontSize1 = 25;
+  double fontSize2 = 20;
+  double leftSize = 70;
+  double rightSize = 70;
+
   checkAuth() async {
     _auth.authStateChanges().listen((user) {
       if (user == null) {
@@ -37,7 +42,6 @@ class AllMoviesState extends State<AllMovies> {
     });
   }
 
-//getting user
   getUser() async {
     User firebaseUser = _auth.currentUser;
     await firebaseUser.reload();
@@ -47,11 +51,13 @@ class AllMoviesState extends State<AllMovies> {
       setState(() {
         this.user = firebaseUser;
         this.isloggedin = true;
+        if (count == 0) {
+          _showAlertDialog();
+        }
       });
     }
   }
 
-//signing out
   signOut() async {
     _auth.signOut();
 
@@ -64,9 +70,6 @@ class AllMoviesState extends State<AllMovies> {
     super.initState();
     this.checkAuth();
     this.getUser();
-    /*if (count == 0) {
-      this.emptyListWidget();
-    }*/
   }
 
   @override
@@ -78,9 +81,27 @@ class AllMoviesState extends State<AllMovies> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color(0xffbF6713C),
         elevation: 0.0,
         actions: [
+          Container(
+            margin: EdgeInsets.only(left: 20, top: 10),
+            child: RichText(
+                text: TextSpan(
+                    text: 'YCM',
+                    style: GoogleFonts.poppins(
+                        fontSize: 25.0,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xff002A5D)))),
+          ),
+          Container(
+            margin: EdgeInsets.only(right: 50),
+            child: Icon(
+              Icons.movie,
+              color: Color(0xff002A5D),
+            ),
+          ),
           ButtonTheme(
               minWidth: 50.0,
               height: 80.0,
@@ -90,9 +111,17 @@ class AllMoviesState extends State<AllMovies> {
                   onPressed: () {
                     if (viewArrangement == 2) {
                       viewArrangement = 1;
+                      fontSize1 = 15.0;
+                      fontSize2 = 10.0;
+                      leftSize = 10.0;
+                      rightSize = 10.0;
                       setState(() {});
                     } else if (viewArrangement == 1) {
                       viewArrangement = 2;
+                      fontSize1 = 25.0;
+                      fontSize2 = 20.0;
+                      leftSize = 70.0;
+                      rightSize = 70.0;
                       setState(() {});
                     }
                   },
@@ -126,13 +155,10 @@ class AllMoviesState extends State<AllMovies> {
           ),
         ],
       ),
-      body: Container(
-          color: Color(0xffbF6713C),
-          child: !isloggedin ? CircularProgressIndicator() : getNoteListView()),
+      body: Container(color: Color(0xffbF6713C), child: getNoteListView()),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         onPressed: () {
-          debugPrint('FAB clicked');
           navigateToDetail(MoviesDetails('', '', ''), 'Add Movie');
         },
         tooltip: 'Add Movie',
@@ -183,7 +209,7 @@ class AllMoviesState extends State<AllMovies> {
                     child: Text(
                       this.allMovies[position].title,
                       style: GoogleFonts.poppins(
-                          fontSize: 25.0,
+                          fontSize: fontSize1,
                           fontStyle: FontStyle.normal,
                           color: Colors.white),
                     ),
@@ -195,33 +221,31 @@ class AllMoviesState extends State<AllMovies> {
                       margin: EdgeInsets.only(top: 0, left: 5),
                       child: Text(this.allMovies[position].director,
                           style: GoogleFonts.poppins(
-                              fontSize: 20.0,
+                              fontSize: fontSize2,
                               fontStyle: FontStyle.normal,
                               color: Colors.white))),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    /*GestureDetector(
-                      child: Icon(
-                        Icons.edit,
-                        color: Colors.grey,
-                      ),
-                      onTap: () {
-                        debugPrint("ListTile Tapped");
-                        navigateToDetail(
-                            this.allMovies[position], 'Edit movie');
-                      },
-                    ),*/
-                    GestureDetector(
-                      child: Icon(
-                        Icons.delete,
+                    RaisedButton(
+                        padding: EdgeInsets.only(
+                            left: leftSize,
+                            right: rightSize,
+                            top: 10,
+                            bottom: 10),
+                        child: Text('Delete',
+                            style: GoogleFonts.roboto(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                                fontStyle: FontStyle.normal)),
                         color: Color(0xffbF6713C),
-                      ),
-                      onTap: () {
-                        _delete(context, allMovies[position]);
-                      },
-                    ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        onPressed: () {
+                          _delete(context, allMovies[position]);
+                        })
                   ],
                 ),
               ],
@@ -249,8 +273,7 @@ class AllMoviesState extends State<AllMovies> {
           ),
           RichText(
             text: TextSpan(
-              text:
-                  "No watched movies list! Add movies to make a list of your watched playlist",
+              text: "No watched movies!Add movies to your list",
               style: GoogleFonts.poppins(
                   fontSize: 25.0,
                   fontStyle: FontStyle.normal,
@@ -286,7 +309,6 @@ class AllMoviesState extends State<AllMovies> {
     }
   }
 
-//updating listview
   void updateListView() {
     final Future<Database> dbFuture = databaseHelper.initializeDatabase();
     dbFuture.then((database) {
@@ -299,5 +321,46 @@ class AllMoviesState extends State<AllMovies> {
         });
       });
     });
+  }
+
+  void _showAlertDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Color(0xff002A5D),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            child: Container(
+              height: 200,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "No watched movies? Add movies to your list now!",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(
+                      width: 320.0,
+                      child: RaisedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          "Close",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: const Color(0xffbF6713C),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

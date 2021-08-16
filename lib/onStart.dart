@@ -114,9 +114,6 @@ class _onStartState extends State<onStart> {
                     color: Color(0xff002A5D)),
               ],
             ),
-            /*SizedBox(height: 20.0),
-            SignInButton(Buttons.Google,
-                text: "Sign up with Google", onPressed: googleSignIn)*/
           ],
         ),
       ),

@@ -10,24 +10,23 @@ import 'dart:developer';
 
 class MovieView extends StatefulWidget {
   final String appBarTitle;
-  final MoviesDetails movie;
+  final MoviesDetails movies;
 
-  MovieView(this.movie, this.appBarTitle);
+  MovieView(this.movies, this.appBarTitle);
 
   @override
   State<StatefulWidget> createState() {
-    return MovieViewState(this.movie, this.appBarTitle);
+    return MovieViewState(this.movies, this.appBarTitle);
   }
 }
 
 class MovieViewState extends State<MovieView> {
   File imageFile;
-  Image image;
   File _image;
   DatabaseHelper helper = DatabaseHelper();
   String appBarTitle;
   MoviesDetails movie;
-
+  Image image;
   TextEditingController titleController = TextEditingController();
   TextEditingController directorController = TextEditingController();
   TextEditingController imageController = TextEditingController();
@@ -45,11 +44,9 @@ class MovieViewState extends State<MovieView> {
 
     titleController.text = movie.title;
     directorController.text = movie.director;
-    //imageController.text = movie.image;
 
     return WillPopScope(
         onWillPop: () {
-          // Write some code to control things, when user press Back navigation button in device navigationBar
           moveToLastScreen();
         },
         child: Scaffold(
@@ -57,14 +54,12 @@ class MovieViewState extends State<MovieView> {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0.0,
-            //title: Text(appBarTitle),
             leading: IconButton(
                 icon: Icon(
                   Icons.arrow_back,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
                 onPressed: () {
-                  // Write some code to control things, when user press back button in AppBar
                   moveToLastScreen();
                 }),
           ),
@@ -254,7 +249,7 @@ class MovieViewState extends State<MovieView> {
   _imgFromGallery() async {
     await ImagePicker.pickImage(source: ImageSource.gallery).then((imgFile) {
       imgString = Utility.base64String(imgFile.readAsBytesSync());
-      debugPrint('datsdsdhagsdhsgdhgsajh: $imgString');
+      debugPrint('checkString: $imgString');
       updateImage();
       imgString = movie.image;
       imageFile = imgFile;
@@ -302,12 +297,10 @@ class MovieViewState extends State<MovieView> {
     Navigator.pop(context, true);
   }
 
-  // Update the title
   void updateTitle() {
     movie.title = titleController.text;
   }
 
-  // Update the director
   void updateDirector() {
     movie.director = directorController.text;
   }
@@ -316,29 +309,23 @@ class MovieViewState extends State<MovieView> {
     movie.image = imgString;
   }
 
-  // Save data to database
   void _save() async {
     moveToLastScreen();
 
     int result;
     if (movie.id != null) {
-      // Case 1: Update operation
       result = await helper.updateMovie(movie);
     } else {
-      // Case 2: Insert Operation
       result = await helper.insertMovie(movie);
     }
 
     if (result != 0) {
-      // Success
-      _showAlertDialog('Status', 'Movie Saved Successfully');
+      _showAlertDialog('Status', 'Movie added to your watched list');
     } else {
-      // Failure
-      _showAlertDialog('Status', 'Problem Saving Movie');
+      _showAlertDialog('Status', 'Error Occured!');
     }
   }
 
-//deleting the data
   void _delete() async {
     moveToLastScreen();
 
@@ -349,18 +336,50 @@ class MovieViewState extends State<MovieView> {
 
     int result = await helper.deleteMovie(movie.id);
     if (result != 0) {
-      _showAlertDialog('Status', 'Movie Deleted Successfully');
+      _showAlertDialog('Status', 'Movie Deleted');
     } else {
-      _showAlertDialog('Status', 'Error Occured while Deleting movie');
+      _showAlertDialog('Status', 'Error Occured while deleting');
     }
   }
 
-//showing dialogbox
   void _showAlertDialog(String title, String message) {
-    AlertDialog alertDialog = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-    );
-    showDialog(context: context, builder: (_) => alertDialog);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Color(0xffbF6713C),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            child: Container(
+              height: 200,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      message.toString(),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(
+                      width: 320.0,
+                      child: RaisedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          "Close",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: const Color(0xff002A5D),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

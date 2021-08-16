@@ -21,8 +21,13 @@ class _LoginUserState extends State<LoginUser> {
       if (user != null) {
         print(user);
 
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AllMovies()));
+        Navigator.pushAndRemoveUntil<dynamic>(
+          context,
+          MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => AllMovies(),
+          ),
+          (route) => false,
+        );
       }
     });
   }
@@ -31,20 +36,6 @@ class _LoginUserState extends State<LoginUser> {
   void initState() {
     super.initState();
     this.checkAuthentification();
-  }
-
-  login() async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-
-      try {
-        await _auth.signInWithEmailAndPassword(
-            email: _email, password: _password);
-      } catch (e) {
-        showError(e.message);
-        print(e);
-      }
-    }
   }
 
   showError(String errormessage) {
@@ -63,6 +54,20 @@ class _LoginUserState extends State<LoginUser> {
             ],
           );
         });
+  }
+
+  login() async {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+
+      try {
+        await _auth.signInWithEmailAndPassword(
+            email: _email, password: _password);
+      } catch (e) {
+        showError(e.message);
+        print(e);
+      }
+    }
   }
 
   navigateToSignUp() async {
