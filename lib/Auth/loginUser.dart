@@ -80,11 +80,17 @@ class _LoginUserState extends State<LoginUser> {
           children: <Widget>[
             Container(
               alignment: Alignment.center,
-              height: 500,
-              margin: EdgeInsets.only(left: 50),
-              child: SvgPicture.asset('assets/icons/mv3.svg',
-                  height: 300.0, width: 300.0),
+              height: 400,
+              child: SvgPicture.asset('assets/icons/auth.svg',
+                  height: 200.0, width: 200.0),
             ),
+            RichText(
+                text: TextSpan(
+                    text: 'Hey! Welcome Back',
+                    style: GoogleFonts.poppins(
+                        fontSize: 25.0,
+                        fontStyle: FontStyle.normal,
+                        color: Color(0xff002A5D)))),
             Container(
               child: Form(
                 key: _formKey,
@@ -92,20 +98,25 @@ class _LoginUserState extends State<LoginUser> {
                   children: <Widget>[
                     Container(
                       width: 250,
-                      color: Color(0xff002A5D),
+                      margin: EdgeInsets.only(top: 30),
                       child: TextFormField(
                           validator: (input) {
                             if (input.isEmpty) return 'Enter Email';
                           },
                           decoration: InputDecoration(
                               labelText: 'Email',
+                              enabledBorder: new OutlineInputBorder(
+                                borderRadius: new BorderRadius.circular(15.0),
+                                borderSide: new BorderSide(
+                                    color: Color(0xff002A5D), width: 2.0),
+                              ),
+                              border: const OutlineInputBorder(),
                               prefixIcon: Icon(Icons.email)),
                           onSaved: (input) => _email = input),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     Container(
                       width: 250,
-                      color: Color(0xff002A5D),
                       child: TextFormField(
                           validator: (input) {
                             if (input.length < 6)
@@ -114,11 +125,17 @@ class _LoginUserState extends State<LoginUser> {
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock),
+                            enabledBorder: new OutlineInputBorder(
+                              borderRadius: new BorderRadius.circular(15.0),
+                              borderSide: new BorderSide(
+                                  color: Color(0xff002A5D), width: 2.0),
+                            ),
+                            border: const OutlineInputBorder(),
                           ),
                           obscureText: true,
                           onSaved: (input) => _password = input),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     RaisedButton(
                       padding: EdgeInsets.only(
                           left: 70, right: 70, top: 10, bottom: 10),
@@ -137,9 +154,7 @@ class _LoginUserState extends State<LoginUser> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 160,
-            ),
+            SizedBox(height: 10),
             GestureDetector(
               child: Text(
                 "Don't have an account? Create One!",

@@ -15,14 +15,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Movie App',
+      title: 'Yellow Class MOVIE',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.red),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: AllMovies(),
       routes: <String, WidgetBuilder>{
         "Login": (BuildContext context) => LoginUser(),
         "SignUp": (BuildContext context) => RegisterUser(),
-        "start": (BuildContext context) => onStart(),
+        "onStart": (BuildContext context) => onStart(),
       },
     );
   }

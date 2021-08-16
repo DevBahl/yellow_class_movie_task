@@ -51,15 +51,15 @@ class _onStartState extends State<onStart> {
         color: Color(0xffbF6713C),
         child: Column(
           children: <Widget>[
-            SizedBox(height: 35.0),
+            SizedBox(height: 0.0),
             Container(
               alignment: Alignment.center,
               margin: EdgeInsets.only(left: 50),
-              height: 500,
+              height: 350,
               child: SvgPicture.asset('assets/icons/mv2.svg',
                   height: 300.0, width: 300.0),
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 0),
             RichText(
                 text: TextSpan(
                     text: 'YCM! An app to keep',
@@ -67,7 +67,7 @@ class _onStartState extends State<onStart> {
                         fontSize: 25.0,
                         fontStyle: FontStyle.normal,
                         color: Color(0xff002A5D)))),
-            SizedBox(height: 10.0),
+            SizedBox(height: 0.0),
             RichText(
                 text: TextSpan(
                     text: 'your watched list updated',
@@ -95,7 +95,7 @@ class _onStartState extends State<onStart> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     color: Color(0xff002A5D)),
-                SizedBox(height: 40.0),
+                SizedBox(height: 20.0),
                 RaisedButton(
                     padding: EdgeInsets.only(
                         left: 65, right: 65, top: 10, bottom: 10),

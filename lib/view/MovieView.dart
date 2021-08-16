@@ -1,7 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:yellow_class_movie_task/Utility.dart';
 import 'package:yellow_class_movie_task/database.dart';
 import 'package:yellow_class_movie_task/model/MoviesDetails.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:developer';
 
 class MovieView extends StatefulWidget {
   final String appBarTitle;
@@ -16,24 +21,31 @@ class MovieView extends StatefulWidget {
 }
 
 class MovieViewState extends State<MovieView> {
+  File imageFile;
+  Image image;
+  File _image;
   DatabaseHelper helper = DatabaseHelper();
-
   String appBarTitle;
   MoviesDetails movie;
 
   TextEditingController titleController = TextEditingController();
   TextEditingController directorController = TextEditingController();
   TextEditingController imageController = TextEditingController();
+  String imgString;
 
   MovieViewState(this.movie, this.appBarTitle);
 
   @override
   Widget build(BuildContext context) {
-    TextStyle textStyle = Theme.of(context).textTheme.title;
+    TextStyle textStyle = GoogleFonts.roboto(
+      fontSize: 20,
+      fontStyle: FontStyle.normal,
+      color: Colors.white,
+    );
 
     titleController.text = movie.title;
     directorController.text = movie.director;
-    imageController.text = movie.image;
+    //imageController.text = movie.image;
 
     return WillPopScope(
         onWillPop: () {
@@ -41,10 +53,16 @@ class MovieViewState extends State<MovieView> {
           moveToLastScreen();
         },
         child: Scaffold(
+          backgroundColor: Color(0xffbF6713C),
           appBar: AppBar(
-            title: Text(appBarTitle),
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            //title: Text(appBarTitle),
             leading: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
                 onPressed: () {
                   // Write some code to control things, when user press back button in AppBar
                   moveToLastScreen();
@@ -55,6 +73,40 @@ class MovieViewState extends State<MovieView> {
             child: ListView(
               children: <Widget>[
                 Padding(
+                  padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      _showPicker(context);
+                    },
+                    child: CircleAvatar(
+                      radius: 85,
+                      backgroundColor: Color(0xffFDCF09),
+                      child: _image != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.file(
+                                _image,
+                                width: 300,
+                                height: 300,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(20)),
+                              width: 300,
+                              height: 300,
+                              child: Icon(
+                                Icons.camera_alt,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                   child: TextField(
                     controller: titleController,
@@ -64,13 +116,19 @@ class MovieViewState extends State<MovieView> {
                       updateTitle();
                     },
                     decoration: InputDecoration(
-                        labelText: 'Movie Title',
-                        labelStyle: textStyle,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0))),
+                      labelText: 'Movie',
+                      labelStyle: textStyle,
+                      enabledBorder: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(15.0),
+                        borderSide: new BorderSide(
+                            color: Color(0xff002A5D), width: 2.0),
+                      ),
+                      border: const OutlineInputBorder(),
+                    ),
                   ),
                 ),
-                Padding(
+                Container(
+                  margin: EdgeInsets.only(left: 20, right: 20),
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                   child: TextField(
                     controller: directorController,
@@ -80,65 +138,92 @@ class MovieViewState extends State<MovieView> {
                       updateDirector();
                     },
                     decoration: InputDecoration(
-                        labelText: 'Director Name',
-                        labelStyle: textStyle,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0))),
+                      labelText: 'Director',
+                      labelStyle: textStyle,
+                      enabledBorder: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(15.0),
+                        borderSide: new BorderSide(
+                            color: Color(0xff002A5D), width: 2.0),
+                      ),
+                      border: const OutlineInputBorder(),
+                    ),
                   ),
                 ),
+                /*Container(
+                  child: NeumorphicButton(
+                      margin: EdgeInsets.only(top: 12),
+                      onPressed: () {
+                        NeumorphicTheme.of(context).themeMode =
+                            NeumorphicTheme.isUsingDark(context)
+                                ? ThemeMode.light
+                                : ThemeMode.dark;
+                      },
+                      style: NeumorphicStyle(
+                        shape: NeumorphicShape.flat,
+                        boxShape: NeumorphicBoxShape.roundRect(
+                            BorderRadius.circular(8)),
+                      ),
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        "Toggle Theme",
+                        style: TextStyle(color: Colors.white),
+                      )),
+                ),*/
                 Padding(
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  child: TextField(
-                    controller: imageController,
-                    style: textStyle,
-                    onChanged: (value) {
-                      debugPrint('Something changed in Description Text Field');
-                      updateImage();
-                    },
-                    decoration: InputDecoration(
-                        labelText: 'Set Poster',
-                        labelStyle: textStyle,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0))),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  child: Row(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Expanded(
-                        child: RaisedButton(
-                          color: Theme.of(context).primaryColorDark,
-                          textColor: Theme.of(context).primaryColorLight,
-                          child: Text(
-                            'Save',
-                            textScaleFactor: 1.5,
+                      RaisedButton(
+                        padding: EdgeInsets.only(
+                            left: 65, right: 65, top: 10, bottom: 10),
+                        color: Color(0xff002A5D),
+                        textColor: Colors.white,
+                        child: Text(
+                          'Save',
+                          textScaleFactor: 1.5,
+                          style: GoogleFonts.roboto(
+                            fontSize: 15,
+                            fontStyle: FontStyle.normal,
+                            color: Colors.white,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              debugPrint("Save button clicked");
-                              _save();
-                            });
-                          },
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _save();
+                          });
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
                         ),
                       ),
                       Container(
                         width: 5.0,
                       ),
-                      Expanded(
-                        child: RaisedButton(
-                          color: Theme.of(context).primaryColorDark,
-                          textColor: Theme.of(context).primaryColorLight,
-                          child: Text(
-                            'Delete',
-                            textScaleFactor: 1.5,
+                      SizedBox(
+                        height: 20,
+                      ),
+                      RaisedButton(
+                        padding: EdgeInsets.only(
+                            left: 58, right: 58, top: 10, bottom: 10),
+                        color: Color(0xff002A5D),
+                        textColor: Colors.white,
+                        child: Text(
+                          'Delete',
+                          textScaleFactor: 1.5,
+                          style: GoogleFonts.roboto(
+                            fontSize: 15,
+                            fontStyle: FontStyle.normal,
+                            color: Colors.white,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              debugPrint("Delete button clicked");
-                              _delete();
-                            });
-                          },
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _delete();
+                          });
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
                         ),
                       ),
                     ],
@@ -148,6 +233,69 @@ class MovieViewState extends State<MovieView> {
             ),
           ),
         ));
+  }
+
+  _imgFromCamera() async {
+    await ImagePicker.pickImage(source: ImageSource.camera).then((imgFile) {
+      imgString = Utility.base64String(imgFile.readAsBytesSync());
+      updateImage();
+      imgString = movie.image;
+      imageFile = imgFile;
+    });
+
+    setState(() {
+      _image = imageFile;
+      updateImage();
+      debugPrint('data: $movie.image');
+      debugPrint('data: $imgString');
+    });
+  }
+
+  _imgFromGallery() async {
+    await ImagePicker.pickImage(source: ImageSource.gallery).then((imgFile) {
+      imgString = Utility.base64String(imgFile.readAsBytesSync());
+      debugPrint('datsdsdhagsdhsgdhgsajh: $imgString');
+      updateImage();
+      imgString = movie.image;
+      imageFile = imgFile;
+    });
+
+    setState(() {
+      _image = imageFile;
+      updateImage();
+      debugPrint('data: $movie.image');
+      debugPrint('data: $imgString');
+    });
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   void moveToLastScreen() {
@@ -165,7 +313,7 @@ class MovieViewState extends State<MovieView> {
   }
 
   void updateImage() {
-    movie.image = imageController.text;
+    movie.image = imgString;
   }
 
   // Save data to database

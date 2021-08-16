@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RegisterUser extends StatefulWidget {
   @override
@@ -66,45 +68,68 @@ class _RegisterUserState extends State<RegisterUser> {
     return Scaffold(
         body: SingleChildScrollView(
       child: Container(
+        color: Color(0xffbF6713C),
         child: Column(
           children: <Widget>[
             Container(
+              alignment: Alignment.center,
               height: 400,
-              child: Image(
-                height: 200,
-                width: 200,
-                image: NetworkImage(
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBVhtJrLye-kdTIJFj0nb2wPWusddZrz9Tbg&usqp=CAU'),
-                fit: BoxFit.contain,
-              ),
+              child: SvgPicture.asset('assets/icons/welcome.svg',
+                  height: 200.0, width: 200.0),
             ),
+            RichText(
+                text: TextSpan(
+                    text: 'Register! To get started',
+                    style: GoogleFonts.poppins(
+                        fontSize: 25.0,
+                        fontStyle: FontStyle.normal,
+                        color: Color(0xff002A5D)))),
             Container(
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
                     Container(
+                      width: 250,
+                      margin: EdgeInsets.only(top: 30),
                       child: TextFormField(
                           validator: (input) {
                             if (input.isEmpty) return 'Enter Name';
                           },
                           decoration: InputDecoration(
                             labelText: 'Name',
-                            prefixIcon: Icon(Icons.person),
+                            enabledBorder: new OutlineInputBorder(
+                              borderRadius: new BorderRadius.circular(15.0),
+                              borderSide: new BorderSide(
+                                  color: Color(0xff002A5D), width: 2.0),
+                            ),
+                            border: const OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.person, color: Colors.white),
                           ),
                           onSaved: (input) => _name = input),
                     ),
                     Container(
+                      width: 250,
+                      margin: EdgeInsets.only(top: 20),
                       child: TextFormField(
                           validator: (input) {
                             if (input.isEmpty) return 'Enter Email';
                           },
                           decoration: InputDecoration(
                               labelText: 'Email',
-                              prefixIcon: Icon(Icons.email)),
+                              enabledBorder: new OutlineInputBorder(
+                                borderRadius: new BorderRadius.circular(15.0),
+                                borderSide: new BorderSide(
+                                    color: Color(0xff002A5D), width: 2.0),
+                              ),
+                              border: const OutlineInputBorder(),
+                              prefixIcon:
+                                  Icon(Icons.email, color: Colors.white)),
                           onSaved: (input) => _email = input),
                     ),
                     Container(
+                      width: 250,
+                      margin: EdgeInsets.only(top: 20),
                       child: TextFormField(
                           validator: (input) {
                             if (input.length < 6)
@@ -112,7 +137,13 @@ class _RegisterUserState extends State<RegisterUser> {
                           },
                           decoration: InputDecoration(
                             labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock),
+                            enabledBorder: new OutlineInputBorder(
+                              borderRadius: new BorderRadius.circular(15.0),
+                              borderSide: new BorderSide(
+                                  color: Color(0xff002A5D), width: 2.0),
+                            ),
+                            border: const OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.lock, color: Colors.white),
                           ),
                           obscureText: true,
                           onSaved: (input) => _password = input),
@@ -121,12 +152,12 @@ class _RegisterUserState extends State<RegisterUser> {
                     RaisedButton(
                       padding: EdgeInsets.fromLTRB(70, 10, 70, 10),
                       onPressed: signUp,
-                      child: Text('Register User',
+                      child: Text('Register',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold)),
-                      color: Colors.red,
+                      color: Color(0xff002A5D),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -135,6 +166,7 @@ class _RegisterUserState extends State<RegisterUser> {
                 ),
               ),
             ),
+            SizedBox(height: 20),
           ],
         ),
       ),
